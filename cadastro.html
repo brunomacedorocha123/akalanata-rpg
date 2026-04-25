@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - RPGForce</title>
+    
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #2a1a3a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .cadastro-container {
+            background: rgba(10, 10, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 30px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            height: 3rem;
+            width: auto;
+            margin-bottom: 10px;
+        }
+
+        .logo-area h1 {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-area p {
+            color: rgba(255,255,255,0.6);
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #fff;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #ffd700;
+            margin-right: 5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            color: rgba(255,215,0,0.5);
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255,215,0,0.2);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* Validação em tempo real */
+        .validation-icon {
+            position: absolute;
+            right: 15px;
+            font-size: 1rem;
+        }
+
+        .valid {
+            color: #00ff00;
+        }
+
+        .invalid {
+            color: #ff4444;
+        }
+
+        /* Indicador de força da senha */
+        .password-strength {
+            margin-top: 10px;
+        }
+
+        .strength-bar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .strength-segment {
+            height: 5px;
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .strength-segment.active:nth-child(1) { background: #ff4444; }
+        .strength-segment.active:nth-child(2) { background: #ffaa00; }
+        .strength-segment.active:nth-child(3) { background: #ffaa00; }
+        .strength-segment.active:nth-child(4) { background: #00cc00; }
+        .strength-segment.active:nth-child(5) { background: #00cc00; }
+
+        .strength-text {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Requisitos da senha */
+        .password-requirements {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 0.8rem;
+        }
+
+        .requirement {
+            color: rgba(255,255,255,0.6);
+            margin: 3px 0;
+        }
+
+        .requirement.met {
+            color: #00ff00;
+        }
+
+        .requirement i {
+            margin-right: 5px;
+            width: 16px;
+        }
+
+        /* Mensagens de erro/sucesso */
+        .feedback-message {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback-message.error {
+            background: rgba(255,68,68,0.2);
+            color: #ff8888;
+            border: 1px solid rgba(255,68,68,0.3);
+            display: block;
+        }
+
+        .feedback-message.success {
+            background: rgba(0,255,0,0.2);
+            color: #88ff88;
+            border: 1px solid rgba(0,255,0,0.3);
+            display: block;
+        }
+
+        .feedback-message.warning {
+            background: rgba(255,170,0,0.2);
+            color: #ffaa00;
+            border: 1px solid rgba(255,170,0,0.3);
+            display: block;
+        }
+
+        /* IDs gerados */
+        .ids-gerados {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+
+        .ids-gerados h3 {
+            color: #ffd700;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .id-item {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            padding: 5px 0;
+        }
+
+        .id-item span {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #ffd700;
+            letter-spacing: 2px;
+        }
+
+        .btn-cadastrar {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: 15px;
+            color: #0a0a1a;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-cadastrar:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+        }
+
+        .btn-cadastrar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-cadastrar i {
+            font-size: 1rem;
+        }
+
+        .login-link {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .login-link a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .voltar {
+            display: inline-block;
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+
+        .voltar:hover {
+            color: #ffd700;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-cadastrar.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-cadastrar.loading .btn-text {
+            display: none;
+        }
+
+        /* Toast de sucesso */
+        .toast-sucesso {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #00cc00, #00aa00);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,255,0,0.3);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-sucesso.show {
+            display: flex;
+        }
+
+        .toast-sucesso i {
+            font-size: 1.5rem;
+        }
+
+        /* Botão de login rápido */
+        .ir-para-login {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .btn-ir-login {
+            background: transparent;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-ir-login:hover {
+            background: #ffd700;
+            color: #0a0a1a;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast de sucesso -->
+    <div class="toast-sucesso" id="toastSucesso">
+        <i class="fas fa-check-circle"></i>
+        <div>
+            <strong>Cadastro realizado com sucesso!</strong><br>
+            <small>Agora faça login com seus dados</small>
+        </div>
+    </div>
+
+    <div class="cadastro-container">
+        <a href="index.html" class="voltar">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        
+        <div class="logo-area">
+            <img src="logo-rpgforce.png" alt="RPGForce" class="logo">
+            <h1>Criar Conta</h1>
+            <p>Junte-se à aventura!</p>
+        </div>
+
+        <form id="formCadastro">
+            <!-- Nome Completo -->
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Nome Completo</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user-circle"></i>
+                    <input type="text" id="nomeCompleto" placeholder="Digite seu nome completo" required>
+                </div>
+            </div>
+
+            <!-- Nickname -->
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Nickname</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-at"></i>
+                    <input type="text" id="nickname" placeholder="Como você quer ser chamado" required>
+                    <span class="validation-icon" id="nicknameIcon"></span>
+                </div>
+                <div id="nicknameFeedback" class="feedback-message"></div>
+            </div>
+
+            <!-- E-mail -->
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> E-mail</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                    <span class="validation-icon" id="emailIcon"></span>
+                </div>
+                <div id="emailFeedback" class="feedback-message"></div>
+            </div>
+
+            <!-- Senha -->
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Senha</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="senha" placeholder="Mínimo 8 caracteres" required>
+                </div>
+                
+                <!-- Força da senha -->
+                <div class="password-strength">
+                    <div class="strength-bar">
+                        <div class="strength-segment" id="strength1"></div>
+                        <div class="strength-segment" id="strength2"></div>
+                        <div class="strength-segment" id="strength3"></div>
+                        <div class="strength-segment" id="strength4"></div>
+                        <div class="strength-segment" id="strength5"></div>
+                    </div>
+                    <span class="strength-text" id="strengthText">Digite uma senha</span>
+                </div>
+
+                <!-- Requisitos -->
+                <div class="password-requirements">
+                    <div class="requirement" id="reqLength">
+                        <i class="far fa-circle"></i> Mínimo 8 caracteres
+                    </div>
+                    <div class="requirement" id="reqUpper">
+                        <i class="far fa-circle"></i> Pelo menos 1 letra maiúscula
+                    </div>
+                    <div class="requirement" id="reqLower">
+                        <i class="far fa-circle"></i> Pelo menos 1 letra minúscula
+                    </div>
+                    <div class="requirement" id="reqNumber">
+                        <i class="far fa-circle"></i> Pelo menos 1 número
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirmar Senha -->
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Confirmar Senha</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="confirmarSenha" placeholder="Digite a senha novamente" required>
+                    <span class="validation-icon" id="confirmIcon"></span>
+                </div>
+                <div id="confirmFeedback" class="feedback-message"></div>
+            </div>
+
+            <!-- IDs Gerados -->
+            <div class="ids-gerados">
+                <h3><i class="fas fa-id-card"></i> Seus IDs únicos (gerados automaticamente)</h3>
+                <div class="id-item">
+                    <span>ID Jogador (PC):</span>
+                    <span id="idPcDisplay">-</span>
+                </div>
+                <div class="id-item">
+                    <span>ID Mestre (GM):</span>
+                    <span id="idGmDisplay">-</span>
+                </div>
+                <p style="color: rgba(255,255,255,0.4); font-size: 0.7rem; margin-top: 10px;">
+                    <i class="fas fa-info-circle"></i> Use esses IDs para convidar amigos e encontrar outros jogadores
+                </p>
+            </div>
+
+            <!-- Botão de Cadastro -->
+            <button type="submit" class="btn-cadastrar" id="btnCadastrar">
+                <span class="btn-text">Criar Conta <i class="fas fa-magic"></i></span>
+                <span class="spinner"></span>
+            </button>
+
+            <div class="login-link">
+                Já tem uma conta? <a href="login.html">Fazer Login</a>
+            </div>
+        </form>
+        
+        <!-- Botão extra para ir ao login (aparece após sucesso) -->
+        <div class="ir-para-login" id="irParaLogin" style="display: none;">
+            <a href="login.html" class="btn-ir-login">
+                <i class="fas fa-sign-in-alt"></i> Ir para o Login
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+       const firebaseConfig = {
+  apiKey: "AIzaSyDB9XGyv5QyFMxNx6B4f7ZA05JYzjxEEBA",
+  authDomain: "akalanata-rpg-72a54.firebaseapp.com",
+  projectId: "akalanata-rpg-72a54",
+  storageBucket: "akalanata-rpg-72a54.firebasestorage.app",
+  messagingSenderId: "145670370761",
+  appId: "1:145670370761:web:63135074eacf341a3ce418"
+};
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // ========== FUNÇÕES ==========
+        
+        function gerarId8Digitos() {
+            return Math.floor(10000000 + Math.random() * 90000000).toString();
+        }
+
+        async function nicknameExiste(nickname) {
+            const q = query(collection(db, "usuarios"), where("nickname", "==", nickname));
+            const querySnapshot = await getDocs(q);
+            return !querySnapshot.empty;
+        }
+
+        async function emailExiste(email) {
+            const q = query(collection(db, "usuarios"), where("email", "==", email));
+            const querySnapshot = await getDocs(q);
+            return !querySnapshot.empty;
+        }
+
+        async function idExiste(id, tipo) {
+            const q = query(collection(db, "usuarios"), where(tipo, "==", id));
+            const querySnapshot = await getDocs(q);
+            return !querySnapshot.empty;
+        }
+
+        async function gerarIdUnico(tipo) {
+            let id;
+            let existe;
+            do {
+                id = gerarId8Digitos();
+                existe = await idExiste(id, tipo);
+            } while (existe);
+            return id;
+        }
+
+        function mostrarToastSucesso() {
+            const toast = document.getElementById('toastSucesso');
+            const irParaLogin = document.getElementById('irParaLogin');
+            
+            toast.classList.add('show');
+            irParaLogin.style.display = 'block';
+            
+            // Esconder toast após 5 segundos
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+
+        // ========== ELEMENTOS ==========
+        
+        const nomeInput = document.getElementById('nomeCompleto');
+        const nicknameInput = document.getElementById('nickname');
+        const emailInput = document.getElementById('email');
+        const senhaInput = document.getElementById('senha');
+        const confirmarInput = document.getElementById('confirmarSenha');
+        
+        const nicknameIcon = document.getElementById('nicknameIcon');
+        const emailIcon = document.getElementById('emailIcon');
+        const confirmIcon = document.getElementById('confirmIcon');
+        
+        const nicknameFeedback = document.getElementById('nicknameFeedback');
+        const emailFeedback = document.getElementById('emailFeedback');
+        const confirmFeedback = document.getElementById('confirmFeedback');
+        
+        const idPcDisplay = document.getElementById('idPcDisplay');
+        const idGmDisplay = document.getElementById('idGmDisplay');
+        
+        const btnCadastrar = document.getElementById('btnCadastrar');
+
+        const strengthSegments = [
+            document.getElementById('strength1'),
+            document.getElementById('strength2'),
+            document.getElementById('strength3'),
+            document.getElementById('strength4'),
+            document.getElementById('strength5')
+        ];
+        const strengthText = document.getElementById('strengthText');
+        
+        const reqLength = document.getElementById('reqLength');
+        const reqUpper = document.getElementById('reqUpper');
+        const reqLower = document.getElementById('reqLower');
+        const reqNumber = document.getElementById('reqNumber');
+
+        // ========== VALIDAÇÕES ==========
+        
+        let nicknameTimeout;
+        nicknameInput.addEventListener('input', async () => {
+            clearTimeout(nicknameTimeout);
+            const nickname = nicknameInput.value.trim();
+            
+            if (nickname.length < 3) {
+                nicknameIcon.innerHTML = '<i class="fas fa-times-circle invalid"></i>';
+                nicknameFeedback.className = 'feedback-message error';
+                nicknameFeedback.textContent = 'Nickname deve ter pelo menos 3 caracteres';
+                return;
+            }
+            
+            nicknameTimeout = setTimeout(async () => {
+                try {
+                    const existe = await nicknameExiste(nickname);
+                    if (existe) {
+                        nicknameIcon.innerHTML = '<i class="fas fa-times-circle invalid"></i>';
+                        nicknameFeedback.className = 'feedback-message error';
+                        nicknameFeedback.textContent = 'Nickname já está em uso';
+                    } else {
+                        nicknameIcon.innerHTML = '<i class="fas fa-check-circle valid"></i>';
+                        nicknameFeedback.className = 'feedback-message success';
+                        nicknameFeedback.textContent = 'Nickname disponível!';
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar nickname:', error);
+                }
+            }, 500);
+        });
+
+        let emailTimeout;
+        emailInput.addEventListener('input', async () => {
+            clearTimeout(emailTimeout);
+            const email = emailInput.value.trim();
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                emailIcon.innerHTML = '<i class="fas fa-times-circle invalid"></i>';
+                emailFeedback.className = 'feedback-message error';
+                emailFeedback.textContent = 'E-mail inválido';
+                return;
+            }
+            
+            emailTimeout = setTimeout(async () => {
+                try {
+                    const existe = await emailExiste(email);
+                    if (existe) {
+                        emailIcon.innerHTML = '<i class="fas fa-times-circle invalid"></i>';
+                        emailFeedback.className = 'feedback-message error';
+                        emailFeedback.textContent = 'E-mail já cadastrado';
+                    } else {
+                        emailIcon.innerHTML = '<i class="fas fa-check-circle valid"></i>';
+                        emailFeedback.className = 'feedback-message success';
+                        emailFeedback.textContent = 'E-mail disponível!';
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar email:', error);
+                }
+            }, 500);
+        });
+
+        function verificarForcaSenha() {
+            const senha = senhaInput.value;
+            
+            const temLength = senha.length >= 8;
+            const temUpper = /[A-Z]/.test(senha);
+            const temLower = /[a-z]/.test(senha);
+            const temNumber = /[0-9]/.test(senha);
+            
+            reqLength.innerHTML = `<i class="fas fa-${temLength ? 'check-circle' : 'times-circle'}"></i> Mínimo 8 caracteres`;
+            reqUpper.innerHTML = `<i class="fas fa-${temUpper ? 'check-circle' : 'times-circle'}"></i> Pelo menos 1 letra maiúscula`;
+            reqLower.innerHTML = `<i class="fas fa-${temLower ? 'check-circle' : 'times-circle'}"></i> Pelo menos 1 letra minúscula`;
+            reqNumber.innerHTML = `<i class="fas fa-${temNumber ? 'check-circle' : 'times-circle'}"></i> Pelo menos 1 número`;
+            
+            reqLength.className = temLength ? 'requirement met' : 'requirement';
+            reqUpper.className = temUpper ? 'requirement met' : 'requirement';
+            reqLower.className = temLower ? 'requirement met' : 'requirement';
+            reqNumber.className = temNumber ? 'requirement met' : 'requirement';
+            
+            let forca = 0;
+            if (temLength) forca++;
+            if (temUpper) forca++;
+            if (temLower) forca++;
+            if (temNumber) forca++;
+            
+            strengthSegments.forEach(s => s.classList.remove('active'));
+            
+            if (senha.length === 0) {
+                strengthText.textContent = 'Digite uma senha';
+                return 0;
+            }
+            
+            if (forca >= 1) strengthSegments[0].classList.add('active');
+            if (forca >= 2) strengthSegments[1].classList.add('active');
+            if (forca >= 3) strengthSegments[2].classList.add('active');
+            if (forca >= 4) strengthSegments[3].classList.add('active');
+            if (forca === 4 && senha.length > 10) strengthSegments[4].classList.add('active');
+            
+            if (forca === 0) strengthText.textContent = 'Muito fraca';
+            else if (forca === 1) strengthText.textContent = 'Fraca';
+            else if (forca === 2) strengthText.textContent = 'Média';
+            else if (forca === 3) strengthText.textContent = 'Boa';
+            else if (forca === 4) {
+                if (senha.length > 10) strengthText.textContent = 'Excelente';
+                else strengthText.textContent = 'Boa';
+            }
+            
+            return forca;
+        }
+
+        senhaInput.addEventListener('input', () => {
+            verificarForcaSenha();
+            validarConfirmacaoSenha();
+        });
+
+        function validarConfirmacaoSenha() {
+            const senha = senhaInput.value;
+            const confirmar = confirmarInput.value;
+            
+            if (confirmar.length === 0) {
+                confirmIcon.innerHTML = '';
+                confirmFeedback.className = 'feedback-message';
+                confirmFeedback.textContent = '';
+                return;
+            }
+            
+            if (senha === confirmar) {
+                confirmIcon.innerHTML = '<i class="fas fa-check-circle valid"></i>';
+                confirmFeedback.className = 'feedback-message success';
+                confirmFeedback.textContent = 'Senhas coincidem!';
+                return true;
+            } else {
+                confirmIcon.innerHTML = '<i class="fas fa-times-circle invalid"></i>';
+                confirmFeedback.className = 'feedback-message error';
+                confirmFeedback.textContent = 'As senhas não coincidem';
+                return false;
+            }
+        }
+
+        confirmarInput.addEventListener('input', validarConfirmacaoSenha);
+
+        // Gerar IDs
+        window.addEventListener('load', async () => {
+            try {
+                const idPc = await gerarIdUnico('id_pc');
+                const idGm = await gerarIdUnico('id_gm');
+                
+                idPcDisplay.textContent = idPc;
+                idGmDisplay.textContent = idGm;
+            } catch (error) {
+                console.error('Erro ao gerar IDs:', error);
+            }
+        });
+
+        // ========== SUBMISSÃO ==========
+        
+        document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nome = nomeInput.value.trim();
+            const nickname = nicknameInput.value.trim();
+            const email = emailInput.value.trim();
+            const senha = senhaInput.value;
+            const confirmar = confirmarInput.value;
+            
+            // Validações
+            if (!nome || !nickname || !email || !senha || !confirmar) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+            
+            if (nickname.length < 3) {
+                alert('Nickname deve ter pelo menos 3 caracteres!');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('E-mail inválido!');
+                return;
+            }
+            
+            const temLength = senha.length >= 8;
+            const temUpper = /[A-Z]/.test(senha);
+            const temLower = /[a-z]/.test(senha);
+            const temNumber = /[0-9]/.test(senha);
+            
+            if (!temLength || !temUpper || !temLower || !temNumber) {
+                alert('A senha deve ter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas e números!');
+                return;
+            }
+            
+            if (senha !== confirmar) {
+                alert('As senhas não coincidem!');
+                return;
+            }
+            
+            const nicknameExisteCheck = await nicknameExiste(nickname);
+            if (nicknameExisteCheck) {
+                alert('Este nickname já está em uso!');
+                return;
+            }
+            
+            const emailExisteCheck = await emailExiste(email);
+            if (emailExisteCheck) {
+                alert('Este e-mail já está cadastrado!');
+                return;
+            }
+            
+            // Ativar loading
+            btnCadastrar.classList.add('loading');
+            btnCadastrar.disabled = true;
+            
+            try {
+                // 1. Criar usuário no Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+                const uid = userCredential.user.uid;
+                
+                // 2. Pegar os IDs gerados
+                const idPc = idPcDisplay.textContent;
+                const idGm = idGmDisplay.textContent;
+                
+                // 3. Salvar dados no Firestore
+                await setDoc(doc(db, "usuarios", uid), {
+                    uid: uid,
+                    nome_completo: nome,
+                    nickname: nickname,
+                    email: email,
+                    id_pc: idPc,
+                    id_gm: idGm,
+                    data_criacao: new Date().toISOString(),
+                    ultimo_acesso: new Date().toISOString()
+                });
+                
+                // 4. IMPORTANTE: FAZER LOGOUT para não ficar logado automaticamente
+                await signOut(auth);
+                
+                // 5. Desativar loading
+                btnCadastrar.classList.remove('loading');
+                btnCadastrar.disabled = false;
+                
+                // 6. Mostrar mensagem de sucesso e botão para login
+                mostrarToastSucesso();
+                
+                // 7. Limpar formulário (opcional)
+                document.getElementById('formCadastro').reset();
+                
+                // 8. Gerar novos IDs para um próximo cadastro
+                const novoIdPc = await gerarIdUnico('id_pc');
+                const novoIdGm = await gerarIdUnico('id_gm');
+                idPcDisplay.textContent = novoIdPc;
+                idGmDisplay.textContent = novoIdGm;
+                
+            } catch (error) {
+                console.error('Erro no cadastro:', error);
+                
+                btnCadastrar.classList.remove('loading');
+                btnCadastrar.disabled = false;
+                
+                let mensagem = 'Erro ao cadastrar. ';
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        mensagem += 'Este e-mail já está em uso.';
+                        break;
+                    case 'auth/invalid-email':
+                        mensagem += 'E-mail inválido.';
+                        break;
+                    case 'auth/weak-password':
+                        mensagem += 'Senha muito fraca.';
+                        break;
+                    default:
+                        mensagem += 'Tente novamente mais tarde.';
+                }
+                alert(mensagem);
+            }
+        });
+    </script>
+</body>
+</html>

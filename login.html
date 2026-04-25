@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - RPGForce</title>
+    
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #2a1a3a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Efeito de fundo mágico */
+        .magic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .magic-bg::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        .magic-bg::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 80% 80%, rgba(198, 40, 40, 0.1) 0%, transparent 50%);
+            animation: pulse 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(10, 10, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 30px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            height: 3rem;
+            width: auto;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 20px rgba(255,215,0,0.5));
+        }
+
+        .logo-area h1 {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .logo-area p {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #fff;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #ffd700;
+            margin-right: 5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            color: rgba(255,215,0,0.5);
+            font-size: 1.1rem;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255,215,0,0.2);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            left: auto !important;
+            color: rgba(255,215,0,0.5);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: #ffd700;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: 15px;
+            color: #0a0a1a;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: rgba(255,68,68,0.2);
+            border: 1px solid rgba(255,68,68,0.3);
+            color: #ff8888;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        .error-message i {
+            font-size: 1.2rem;
+        }
+
+        .cadastro-link {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            margin-top: 25px;
+        }
+
+        .cadastro-link a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .cadastro-link a:hover {
+            color: #ff6b6b;
+            text-decoration: underline;
+        }
+
+        .voltar {
+            display: inline-block;
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+
+        .voltar:hover {
+            color: #ffd700;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-login.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-login.loading .btn-text {
+            display: none;
+        }
+
+        /* Responsivo */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            .logo-area h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="magic-bg"></div>
+    
+    <div class="login-container">
+        <a href="index.html" class="voltar">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        
+        <div class="logo-area">
+            <img src="logo-akalanata.png" alt="RPGForce" class="logo">
+            <h1>Bem-vindo de Volta</h1>
+            <p>Entre para continuar sua aventura</p>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText">E-mail ou senha incorretos</span>
+        </div>
+
+        <form id="formLogin">
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> E-mail</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Senha</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="senha" placeholder="Digite sua senha" required>
+                    <i class="fas fa-eye toggle-password" id="toggleSenha"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login" id="btnLogin">
+                <span class="btn-text">Entrar <i class="fas fa-dragon"></i></span>
+                <span class="spinner"></span>
+            </button>
+        </form>
+
+        <div class="cadastro-link">
+            Ainda não tem uma conta?
+            <a href="cadastro.html">Criar conta agora</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+       const firebaseConfig = {
+    apiKey: "AIzaSyDB9XGyv5QyFMxNx6B4f7ZA05JYzjxEEBA",
+    authDomain: "akalanata-rpg-72a54.firebaseapp.com",
+    projectId: "akalanata-rpg-72a54",
+    storageBucket: "akalanata-rpg-72a54.firebasestorage.app",
+    messagingSenderId: "145670370761",
+    appId: "1:145670370761:web:63135074eacf341a3ce418"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const formLogin = document.getElementById('formLogin');
+        const emailInput = document.getElementById('email');
+        const senhaInput = document.getElementById('senha');
+        const btnLogin = document.getElementById('btnLogin');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const toggleSenha = document.getElementById('toggleSenha');
+
+        toggleSenha.addEventListener('click', () => {
+            const type = senhaInput.type === 'password' ? 'text' : 'password';
+            senhaInput.type = type;
+            toggleSenha.classList.toggle('fa-eye');
+            toggleSenha.classList.toggle('fa-eye-slash');
+        });
+
+        formLogin.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const senha = senhaInput.value;
+            
+            errorMessage.classList.remove('show');
+            
+            if (!email || !senha) {
+                errorText.textContent = 'Preencha todos os campos';
+                errorMessage.classList.add('show');
+                return;
+            }
+            
+            btnLogin.classList.add('loading');
+            btnLogin.disabled = true;
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+                
+                await updateDoc(doc(db, "usuarios", userCredential.user.uid), {
+                    ultimo_acesso: new Date().toISOString()
+                });
+                
+                window.location.href = 'escolher-tipo.html';
+                
+            } catch (error) {
+                btnLogin.classList.remove('loading');
+                btnLogin.disabled = false;
+                
+                let mensagem = 'Erro ao fazer login';
+                if (error.code === 'auth/user-not-found') mensagem = 'Usuário não encontrado';
+                if (error.code === 'auth/wrong-password') mensagem = 'Senha incorreta';
+                if (error.code === 'auth/invalid-email') mensagem = 'E-mail inválido';
+                if (error.code === 'auth/too-many-requests') mensagem = 'Muitas tentativas. Tente mais tarde';
+                
+                errorText.textContent = mensagem;
+                errorMessage.classList.add('show');
+            }
+        });
+
+        emailInput.addEventListener('input', () => {
+            errorMessage.classList.remove('show');
+        });
+
+        senhaInput.addEventListener('input', () => {
+            errorMessage.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
